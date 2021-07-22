@@ -77,7 +77,12 @@ class AnswersController extends Controller
      */
     public function destroy($id)
     {
+        // $delete = array(
+        //     'status' => 2
+        // );
+        // dd($delete);
         $answer = Answer::destroy($id);
+      
         if ($answer) {
             return redirect()->route('home')->withSuccessMessage('Your Answer has been deleted.');
         }
