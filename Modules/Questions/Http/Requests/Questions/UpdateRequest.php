@@ -25,7 +25,6 @@ class UpdateRequest extends FormRequest
     {
         return [
             'title' => 'required',
-            'description' => 'required'
         ];
     }
 
@@ -33,7 +32,6 @@ class UpdateRequest extends FormRequest
     {
         return [
             'title.required' => 'Title field is required.',
-            'description.required' => 'Description field is required.'
         ];
     }
 }
