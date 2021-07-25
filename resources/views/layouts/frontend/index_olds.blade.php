@@ -1,5 +1,3 @@
-@include('layouts.frontend.header')
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -36,7 +34,7 @@
         </div>
 
         <ul>
-          <a href="{{ route('home') }}" class="active">
+          <a href="index.html" class="active">
             <li><i class="fas fa-home"></i></li>
           </a>
           <a href="">
@@ -48,33 +46,88 @@
           <a href="">
             <li><i class="fas fa-users"></i></li>
           </a>
-          <a href="{{route('profile.show')}}"> <i class="fas fa-user-alt"></i>
-            @if(Route::has('login'))
-                    @auth
-                    @else
-                    <li class="menu-item" ><a title="Register or Login" href="{{route('login')}}">Login</a></li>
-                    <li class="menu-item" ><a title="Register or Login" href="{{route('register')}}">Register</a></li>
-                    @endif
-                @endif
+          <a href="">
+            <li><i class="fas fa-user-alt"></i></li>
           </a>
         </ul>
 
+        <div class="logout">
+          <a href="">
+            <i class="fas fa-power-off"></i>
+          </a>
+        </div>
       </div>
     </header>
 
-
+    <!-- Ask Question MOdal -->
+    <div
+      class="modal fade"
+      id="postModal"
+      tabindex="-1"
+      aria-labelledby="postModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="postModalLabel">Ask New Question</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="recipient-name" class="col-form-label"
+                  >Your Question:</label
+                >
+                <input type="text" class="form-control" id="recipient-name" />
+              </div>
+              <div class="mb-3">
+                <label for="message-text" class="col-form-label"
+                  >Describe Your Question:</label
+                >
+                <textarea
+                  class="form-control"
+                  id="message-text"
+                  rows="9"
+                ></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer d-flex justify-content-between">
+            <div class="d-flex">
+              <input type="file" name="" id="image" />
+            </div>
+            <div>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <button type="button" class="btn btn-success">Post Now</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <main>
       <section class="post">
         <div class="post_content">
           <img src="img/profile.jpg" alt="" />
-          <div onclick="postQuestion();"><a href="{{ route('ask.create') }}"> Ask Your Question Here?</div>
+          <div onclick="postQuestion();">Ask Your Question Here?</div>
         </div>
       </section>
 
       <section>
         <div class="main_post">
-          {{-- <div class="profile">
+          <div class="profile">
             <img src="img/profile.jpg" alt="" />
             <div class="text_content">
               <h2 class="card_title">
@@ -88,8 +141,8 @@
                 >Maths</a
               >
             </div>
-          </div> --}}
-          {{-- <div class="text_content">
+          </div>
+          <div class="text_content">
             <a href="single_post.html">
               <h2 class="section_title">Who is the father of C?</h2>
             </a>
@@ -101,70 +154,121 @@
               voluptatum distinctio, dolorem cupiditate nesciunt?
               <a href="" class="see_more">See More</a>
             </p>
-          </div> --}}
-          <div class="card">
-                <div class="card-header">All Questions</div>
-                @include('layouts.alert')
-
-                <div class="card-body">
-                   @foreach ($questions as $question)
-                       <div class="media">
-
-                         {{-- <div class="d-flex flex-column counters">
-                            <div class="vote">
-                              <strong>{{$question->votes_count}}</strong>{{ Str::plural('vote',$question->votes_count) }}
-                            </div>
-                            <div class="status {{$question->status}}">
-                                <strong>{{$question->answers_count}}</strong>{{ Str::plural('answer',$question->answers_count) }}
-                            </div>
-                         </div> --}}
-                          <div class="media-body">
-                            <h3 class="mt-0"><a href="{{ $question->url }}">{{$question->title}}</a></h3>
-                            <p>
-                              Asked By :
-                              <a href="{{ $question->user->url }}">{{$question->user->name}}</a>
-                              <small class="text-muted">{{$question->created_date}}</small>
-                            </p>
-                            <p> {!! $question->description !!} </p>
-                          </div>
-                          <div class="footer_content">
-                                <div class="left_content">
-                                  <a href="" title="Up Vote"
-                                    >30<i class="fas fa-arrow-alt-circle-up"></i
-                                  ></a>
-                                  <a href="" title="Down Vote"
-                                    ><i class="fas fa-arrow-alt-circle-down"></i>10</a
-                                  >
-                                  <a href="" style="padding-left: 1.5em" title="Total Views"
-                                    ><i class="fas fa-eye"></i>{{$question->views . "". Str::plural('view',$question->views) }}</a
-                                  >
-                                </div>
-                                <div class="right_content">
-                                  <a href="" title="Total Comments"
-                                    >50<i class="fas fa-comments"></i
-                                  ></a>
-                                </div>
-
-                                @can('update',$question)
-                                <a href="{{ route('ask.edit', $question->id) }}" title="Edit message"><button class="btn btn-primary btn-flat">Edit</i></button></a>&nbsp;
-                              @endcan
-                              @can('delete',$question)
-                              <form method="post" action="{{ route('ask.destroy', $question->id) }}">
-                                  {{-- {{@method('DELETE')}} --}}
-                                  {{method_field('DELETE')}}
-      
-                                  @csrf
-                                  <button type="submit" class="btn btn-danger btn-flat" onclick="return confirm('Are You Sure Want To Delete ?')">Delete</button>
-                                  </form>
-                              @endcan
-
-                              </div>
-                       </div>
-                   @endforeach
-                </div>
-                
+            <img src="img/post.jpg" class="post_image" alt="" />
+          </div>
+          <div class="footer_content">
+            <div class="left_content">
+              <a href="" title="Up Vote"
+                >30<i class="fas fa-arrow-alt-circle-up"></i
+              ></a>
+              <a href="" title="Down Vote"
+                ><i class="fas fa-arrow-alt-circle-down"></i>10</a
+              >
+              <a href="" style="padding-left: 1.5em" title="Total Views"
+                ><i class="fas fa-eye"></i>10</a
+              >
             </div>
-    
+            <div class="right_content">
+              <a href="" title="Total Comments"
+                >50<i class="fas fa-comments"></i
+              ></a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="main_post">
+          <div class="profile">
+            <img src="img/profile2.jpg" alt="" />
+            <div class="text_content">
+              <h2 class="card_title">
+                <a href="profile.html">Jane Doe</a>
+              </h2>
+              <small class="card_sub_title">10 Month ago</small>
+              <a
+                href=""
+                class="follow_button"
+                style="position: absolute; top: 2em; right: 0"
+                >Programming</a
+              >
+            </div>
+          </div>
+          <div class="text_content">
+            <a href="single_post.html">
+              <h2 class="section_title">Who is the father of Linux?</h2>
+            </a>
+            <p>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Laborum
+              repellat iusto officia quaerat! Iste maiores voluptate,
+              exercitationem alias omnis modi in nostrum dolores. Dolorum fugit
+              sunt molestiae hic qui quam earum! Veniam rerum pariatur facere
+              voluptatum distinctio, dolorem cupiditate nesciunt?
+              <a href="" class="see_more">See More</a>
+            </p>
+            <!-- <img src="img/post.jpg" class="post_image" alt="" /> -->
+          </div>
+          <div class="footer_content">
+            <div class="left_content">
+              <a href="" title="Up Vote"
+                >30<i class="fas fa-arrow-alt-circle-up"></i
+              ></a>
+              <a href="" title="Down Vote"
+                ><i class="fas fa-arrow-alt-circle-down"></i>50</a
+              >
+              <a href="" style="padding-left: 1.5em" title="Total Views"
+                ><i class="fas fa-eye"></i>20</a
+              >
+            </div>
+            <div class="right_content">
+              <a href="" title="Total Comments"
+                >500<i class="fas fa-comments"></i
+              ></a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="main_post">
+          <div class="profile">
+            <img src="img/profile.jpg" alt="" />
+            <div class="text_content">
+              <h2 class="card_title">
+                <a href="profile.html">John Doe</a>
+              </h2>
+              <small class="card_sub_title">10 Month ago</small>
+              <a
+                href=""
+                class="follow_button"
+                style="position: absolute; top: 2em; right: 0"
+                >AI</a
+              >
+            </div>
+          </div>
+          <div class="text_content">
+            <a href="single_post.html">
+              <h2 class="section_title">Who is the father of Computer?</h2>
+            </a>
+          </div>
+          <div class="footer_content">
+            <div class="left_content">
+              <a href="" title="Up Vote"
+                >30<i class="fas fa-arrow-alt-circle-up"></i
+              ></a>
+              <a href="" title="Down Vote"
+                ><i class="fas fa-arrow-alt-circle-down"></i>1000</a
+              >
+              <a href="" style="padding-left: 1.5em" title="Total Views"
+                ><i class="fas fa-eye"></i>200000</a
+              >
+            </div>
+            <div class="right_content">
+              <a href="" title="Total Comments"
+                >50<i class="fas fa-comments"></i
+              ></a>
+            </div>
+          </div>
         </div>
       </section>
     </main>
@@ -189,26 +293,12 @@
             <img src="img/profile.jpg" alt="" />
             <div class="text_content">
               <h2 class="card_title">
-                <a href="profile.html">    
-                @if(Route::has('login'))
-                    @auth
-                          <a title="My Account">{{Auth::user()->name}}</a><br><br>
-                          <ul class="submenu curency" >
-                              <li class="menu-item">
-                                  <a href="{{route('logout')}}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" ><i class="fas fa-power-off"></i>Logout</a>
-                              </li>
-                              <form id="logout-form" method="POST" action="{{route('logout')}}">
-                                  @csrf
-                              </form>
-                          </ul>
-                  @else
-                  <li class="menu-item"  style="margin-left: 740px;"><a title="Register or Login" href="{{route('login')}}">Login</a></li>
-                  <li class="menu-item"  style="margin-left: 740px;"><a title="Register or Login" href="{{route('register')}}">Register</a></li>
-                  @endif
-
-              @endif
+                <a href="profile.html"
+                  >John Doe
+                  <i class="fas fa-check-circle"></i>
                 </a>
               </h2>
+              <p class="card_sub_title">Science Expert</p>
             </div>
           </div>
         </div>

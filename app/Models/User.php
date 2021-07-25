@@ -60,6 +60,11 @@ class User extends Authenticatable
          return $this->hasMany(Answer::class);
      }
 
+     public function voteAnswers()
+     {
+         return $this->morphedByMany(Answer::class, 'votable');
+     }
+
 
     /**
      * The attributes that should be cast to native types.

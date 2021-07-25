@@ -44,4 +44,9 @@ class Answer extends Model
     {
         return \Parsedown::instance()->text($this->body);
     }
+
+    public function votes()
+    {
+        return $this->morphToMany(User::class,'votable');
+    }
 }
